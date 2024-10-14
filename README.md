@@ -21,6 +21,10 @@ Untuk Peminjam:
 
   ## FLOWCHART
 
+  berikut adalah flowchart dari program ini:
+![minpro2](https://github.com/user-attachments/assets/32cf8996-359b-484f-9f13-bdd140ccc89f)
+
+
   ## Penjelasan Output
 ### MENU UTAMA
 
