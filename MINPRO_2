@@ -1,0 +1,176 @@
+#Muhammad Irdhan Nur Faudzan
+#Sistem Peminjaman Buku di Perpustakaan
+
+
+
+from prettytable import PrettyTable
+# Data pengguna (role)
+users = {
+    "admin": {"password": "admin123", "role": "admin"},
+    "peminjam": {"password": "peminjam123", "role": "peminjam"}
+}
+
+# Data buku (untuk admin mengelola)
+buku = [
+    {"judul": "Pemrograman Python", "status": "Tersedia"},
+    {"judul": "Belajar Machine Learning", "status": "Tersedia"},
+    {"judul": "Bermain Bersama", "status": "Tersedia"},
+    {"judul": "Tendangan Si Madun", "status": "Tersedia"}
+]
+
+# Fungsi login
+def login(role_pilihan):
+    username = input("\nUsername : ")
+    password = input("Password : ")
+    
+    if username in users and users[username]["password"] == password:
+        if users[username]["role"] == role_pilihan:
+            print(f"\nLogin berhasil! \nSelamat datang, {username}.\n")
+            return users[username]["role"]
+        else:
+            print("\nAnda tidak memiliki akses untuk role ini!")
+            return None
+    else:
+        print("\nUsername atau Password Salah \nSilahkan Masukkan Kembali!")
+        return None
+
+# Fungsi menampilkan menu berdasarkan role
+def show_menu(role):
+    if role == "admin":
+        menu_admin()
+    elif role == "peminjam":
+        menu_peminjam()
+
+# Fungsi untuk menampilkan semua buku dengan PrettyTable
+def show_buku():
+    if len(buku) <= 0:
+        print("Tidak ada buku di perpustakaan.")
+    else:
+        print("\n\t========= DAFTAR BUKU =========")
+        table = PrettyTable()
+        table.field_names = ["ID", "Judul Buku", "Status"]
+
+        for i, bk in enumerate(buku):   # Melakukan iterasi pada daftar buku dan menambahkan setiap buku ke tabel
+            table.add_row([i, bk['judul'], bk['status']])
+
+        print(table)
+
+# Menu khusus untuk role admin (CRUD)
+def menu_admin():
+    while True:
+        print("\n=== MENU ADMIN ===")
+        print("[1] Lihat Buku")
+        print("[2] Tambah Buku")
+        print("[3] Edit Buku")
+        print("[4] Hapus Buku")
+        print("[5] Logout")
+        pilihan = input("Pilih Menu: ")
+        
+        if pilihan == "1":
+            show_buku()
+        elif pilihan == "2":
+            tambah_buku()
+        elif pilihan == "3":
+            edit_buku()
+        elif pilihan == "4":
+            hapus_buku()
+        elif pilihan == "5":
+            print("Anda telah logout.")
+            break
+        else:
+            print("Pilihan tidak valid!")
+
+# Fungsi untuk menambah buku
+def tambah_buku():
+    judul_baru = input("Judul Buku Baru: ")
+    buku.append({"judul": judul_baru, "status": "Tersedia"})
+    print(f'Buku "{judul_baru}" telah ditambahkan.')
+
+# Fungsi untuk mengedit buku
+def edit_buku():
+    show_buku()
+    indeks = int(input("Pilih ID buku yang ingin diedit: "))
+    if indeks >= 0 and indeks < len(buku):
+        judul_baru = input("Masukkan judul baru: ")
+        buku[indeks]["judul"] = judul_baru
+        print(f"Buku telah diubah menjadi {judul_baru}.")
+    else:
+        print("ID buku tidak valid!")
+
+# Fungsi untuk menghapus buku
+def hapus_buku():
+    show_buku()
+    indeks = int(input("Pilih ID buku yang ingin dihapus: "))
+    if indeks >= 0 and indeks < len(buku):
+        buku_dihapus = buku.pop(indeks)
+        print(f'Buku "{buku_dihapus["judul"]}" telah dihapus.')
+    else:
+        print("ID buku tidak valid!")
+
+# Menu khusus untuk role peminjam (peminjaman)
+def menu_peminjam():
+    while True:
+        print("\n=== MENU PEMINJAM ===")
+        print("[1] Lihat Buku")
+        print("[2] Pinjam Buku")
+        print("[3] Logout")
+        pilihan = input("Pilih menu: ")
+        
+        if pilihan == "1":
+            show_buku()
+        elif pilihan == "2":
+            pinjam_buku()
+        elif pilihan == "3":
+            print("\nAnda telah logout.")
+            break
+        else:
+            print("Pilihan tidak valid!")
+
+# Fungsi untuk peminjaman buku oleh peminjam
+def pinjam_buku():
+    show_buku()
+    indeks = int(input("Pilih ID buku yang ingin dipinjam: "))
+    if indeks >= 0 and indeks < len(buku):
+        if buku[indeks]["status"] == "Tersedia":
+            buku[indeks]["status"] = "Dipinjam"
+            print(f'Buku "{buku[indeks]["judul"]}" berhasil dipinjam.')
+        else:
+            print(f'Buku "{buku[indeks]["judul"]}" sedang dipinjam orang lain.')
+    else:
+        print("ID buku tidak valid!")
+
+# Fungsi untuk memilih role awal (admin atau peminjam)
+def pilih_role():
+    print("\n=== SELAMAT DATANG DI SISTEM PEMINJAMAN BUKU ===")
+    while True:
+        print("\nPilih login sebagai:")
+        print("[1] Admin")
+        print("[2] Peminjam")
+        pilihan = input("Pilih (1/2): ")
+        
+        if pilihan == "1":
+            return "admin"
+        elif pilihan == "2":
+            return "peminjam"
+        else:
+            print("Pilihan tidak valid, coba lagi.")
+
+# Menjalankan program
+def main():
+    while True:
+        role_pilihan = pilih_role()
+        role = None
+        while role is None:
+            role = login(role_pilihan)
+        
+        show_menu(role)
+
+        # Setelah logout, tawarkan pilihan untuk login kembali atau keluar
+        pilihan = input("\nApakah Anda Ingin Login Kembali? (y/n): ").lower()
+        if pilihan != 'y':
+            print("\nTerima Kasih Telah Menggunakan Sistem Perpustakaan. \nSampai Jumpa!\n")
+            break
+ 
+# Memulai program
+if __name__ == "__main__":
+    main()
